@@ -1,3 +1,8 @@
 finalprojectvenv/
 weather/configurations.ini
-weather/db.sqlite3
+db.sqlite3
+db.sqlite3-journal
+*.log
+__pycache__/
+*/py[cod]
+*$py.class
