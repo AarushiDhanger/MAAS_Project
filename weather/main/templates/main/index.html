@@ -4,7 +4,9 @@
 <body>
   <form method="post">
     {% csrf_token %}
-    <input type="text" class="form-control" name="city" placeholder="Search">
+    <input type="text" name="city" placeholder="Search">
+    <input type="hidden" id="clientlatitude" name="clientlatitude" value="NULL">
+    <input type="hidden" id="clientlongitude" name="clientlongitude" value="NULL">
   <form>
   <div>
     {% if country_code and coordinate and temp and pressure and humidity %}
@@ -14,9 +16,27 @@
         <h5>temp : {{temp}}</h5>
         <h5>pressure : {{pressure}} </h5>
         <h5>humidity : {{humidity}}</h5>
+        <h5>user coordinates : {{user_coordinate}}</h5>
       </div>
     {% endif %}
+    <div>
+      <h3 id="info"></h3>
+    </div>
   </div>
 </body>
 
 </html>
+
+<script>
+const x = 
+
+navigator.geolocation.getCurrentPosition(locationSuccess,locationFailure);
+
+function locationSuccess(position) {
+  document.getElementById("clientlatitude").value = position.coords.latitude;
+  document.getElementById("clientlongitude").value = position.coords.longitude;
+}
+function locationFailure(position) {
+  document.getElementById("info").innerHTML = "Please allow this website to access your locations";
+}
+</script>
