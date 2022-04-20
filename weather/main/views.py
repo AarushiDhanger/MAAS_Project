@@ -1,3 +1,4 @@
+from logging import exception
 from urllib.error import HTTPError
 from django.shortcuts import render
 
@@ -9,18 +10,29 @@ import json
 import urllib
 import config
 from eprint import eprint
+from geopy.distance import great_circle
 def index(request):
 
     if request.method == 'POST':
         city = request.POST['city']
-        print(request.POST['clientlatitude'])
-        print(request.POST['clientlongitude'])
-
-        # source contain JSON data from API
+        print("User Lat: %s\t Lon: %s"%(request.POST['clientlatitude'],request.POST['clientlongitude']))       
+         
+        #find the Lattitude and Longitude of the searched location
         try:
             source = urllib.request.urlopen(
-            'http://api.openweathermap.org/data/2.5/weather?q=' 
-                    + urllib.parse.quote(city) + '&appid=' + config.apikey).read()
+            'https://nominatim.openstreetmap.org/search?q=' 
+                    + urllib.parse.quote(city) + '&format=json').read()
+        except HTTPError as error:
+            eprint.error("Received HTTPError from openstreetmap api call: %d" %(error.code))
+            raise NotImplementedError
+        list_of_data = json.loads(source)
+        print("Searched Location Lat: %s\t Lon: %s"%(list_of_data[0]['lat'],list_of_data[0]['lon']))
+           
+        # Get weather information at the searched location, Using coordinates found by OSM
+        try:
+            source = urllib.request.urlopen(
+            'http://api.openweathermap.org/data/2.5/weather?lat=' 
+                    + urllib.parse.quote(list_of_data[0]['lat']) + '&lon=' + urllib.parse.quote(list_of_data[0]['lon']) + '&appid=' + config.apikey).read()
         except HTTPError as error:
             eprint.error("Received HTTPError from openweathermap api call: %d" %(error.code))
             if error.code == 404:
@@ -31,7 +43,7 @@ def index(request):
         
         # converting JSON data to a dictionary
         list_of_data = json.loads(source)
-  
+        print(great_circle((request.POST['clientlatitude'],request.POST['clientlongitude']), (list_of_data['coord']['lat'],list_of_data['coord']['lon'])).km)
         # data for variable list_of_data
         data = {
             "country_code": str(list_of_data['sys']['country']),
@@ -42,6 +54,7 @@ def index(request):
             "humidity": str(list_of_data['main']['humidity']),
             "user_coordinate": request.POST['clientlongitude'] + ' '
                         + request.POST['clientlatitude'],
+            "distance":str(great_circle((request.POST['clientlatitude'],request.POST['clientlongitude']), (list_of_data['coord']['lat'],list_of_data['coord']['lon'])).miles)
         }
         print(data)
     else:

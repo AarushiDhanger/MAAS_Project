@@ -10,7 +10,7 @@ if not EXIST %0\..\finalprojectvenv\ (
     cd %0\..
     py -3 -m venv finalprojectvenv
     call %0\..\finalprojectvenv\Scripts\activate.bat
-    pip install django eprint
+    pip install django eprint geopy
     echo Created VENV
     echo Establishing Database
     cd %0\..\weather
