@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title></title>
+</head>
+
+<body style="direction: ltr" lang="en-us">
+  <h1 style="text-align: center;"><span style="font-family: Broadway; font-size:5vw;">Where
+      ya Going Weather</span></h1>
+  <h3 style="text-align: center; font-size:2vw;">Time and travel sensitive weather
+    information.</h3>
+  <h1 id="locationalert" style="text-align: center; background-color: #666666; font-size:3vw; margin-right:10vw; margin-left:10vw; display: none;"><span style="color: #ff6600;">
+      <b><i>UH-OH!</i></b><br> We need access to your location to help you plan your trip!<br>Please
+      Click the 'Allow Access' button in your browser.
+    </span></h1>
+
+  <h2 style="text-align: center; font-size:2vw;"><span style="font-family: Broadway;">Just
+      Type in where you want to go<br>And the time you want to get
+      there,<br>Then press Lets Go!</span>
+  </h2>
+
+  <div style="text-align: center; height: 42px;">
+    <div style="text-align: left;">
+      <div style="text-align: center;">
+        <form name="" action="" method="POST" autocomplete="on">
+          {%csrf_token%}
+          <input name="city" class="formbox" placeholder="Enter you destination" required="required"
+            style="color: darkblue; background-color: lightblue; font-family: Broadway;" type="text"><br>
+          <input name="time" class="formbox"
+            style="color: darkblue; background-color: lightblue; font-family: Broadway;" placeholder="Arrival Time"
+            type="time"><br>
+          <input name="submit" class="formbox" value="Lets Go!"
+            style="background-color: lightgreen; border-color: green; font-family: Broadway; color: #6600cc;"
+            type="submit"> <input id="clientlatitude" name="clientlatitude" value="NULL" type="hidden">
+          <br>
+          <input id="clientlongitude" name="clientlongitude" value="NULL" type="hidden">
+        </form>
+
+      </div>
+      {% if coordinate and temp and user_coordinate%}
+      <div> <br>
+        <div style="text-align: center;"> On your {{adjective}} trip to
+          {{location_title}}</div>
+        <div style="text-align: center;"> it looks like you will be traveling
+          {{distance}} miles in {{temp}} degree weather</div>
+        <div style="text-align: center;"> you might want to {{comment}}! <br>
+          {{time}}</div>
+      </div>
+      {% endif %}
+      <div>
+        <h3 id="info"></h3>
+      </div>
+    </div>
+  </div>
+  <div style="text-align: center;"></div>
+
+  <script>
+    navigator.geolocation.getCurrentPosition(locationSuccess, locationFailure);
+    //document.body.style.background = 'lightgray';
+
+    function locationSuccess(position) {
+      document.getElementById("locationalert").style.display = "none";
+      document.getElementById("clientlatitude").value = position.coords.latitude;
+      document.getElementById("clientlongitude").value = position.coords.longitude;
+    }
+    function locationFailure(position) {
+      document.getElementById("locationalert").style.display = "block";
+    }
+  </script>
+
+  <style>
+    .formbox {
+      width: 200px;
+      height: 30px;
+      border: 2px solid blue;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    body {
+      background-image: url('media/slowprettyclouds.gif');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: 100% 100%;
+    }
+  </style>
+</body>
+
+</html>

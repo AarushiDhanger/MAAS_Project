@@ -15,6 +15,8 @@ def index(request):
 
     if request.method == 'POST':
         city = request.POST['city']
+        time = request.POST['time']
+        print(time)
          
         #find the Lattitude and Longitude of the searched location
         try:
@@ -44,8 +46,6 @@ def index(request):
         
         # converting JSON data to a dictionary
         list_of_data = json.loads(source)
-        #print(great_circle((request.POST['clientlatitude'],request.POST['clientlongitude']), (list_of_data['coord']['lat'],list_of_data['coord']['lon'])).km)
-        # data for variable list_of_data
         data = {
             "location_title":str(map_data[0]['display_name']),
             "coordinate": str(list_of_data['lat']) + ', '
@@ -55,8 +55,9 @@ def index(request):
             "humidity": str(list_of_data['current']['humidity']),
             "user_coordinate": request.POST['clientlatitude'] + ', '
                         + request.POST['clientlongitude'],
-            "distance":str(round(great_circle((request.POST['clientlatitude'],request.POST['clientlongitude']), (list_of_data['lat'],list_of_data['lon'])).miles,2)) + ' mi'
+            "distance":str(round(great_circle((request.POST['clientlatitude'],request.POST['clientlongitude']), (list_of_data['lat'],list_of_data['lon'])).miles,2)) + ' mi',
+            "time":str(time)
         }
     else:
         data ={}
-    return render(request, "main/index.html", data)
+    return render(request, "main/main.html", data)
