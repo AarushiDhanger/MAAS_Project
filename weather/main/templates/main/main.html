@@ -7,85 +7,148 @@
 </head>
 
 <body style="direction: ltr" lang="en-us">
+  <div id="bg-right"></div>
+  <div id="bg-left"></div>
   <h1 style="text-align: center;"><span style="font-family: Broadway; font-size:5vw;">Where
       ya Going Weather</span></h1>
-  <h3 style="text-align: center; font-size:2vw;">Time and travel sensitive weather
-    information.</h3>
-  <h1 id="locationalert" style="text-align: center; background-color: #666666; font-size:3vw; margin-right:10vw; margin-left:10vw; display: none;"><span style="color: #ff6600;">
+  <h3 style="text-align: center; font-size:2vw;">Time & Travel Sensitive Weather Information.</h3>
+  <h1 id="locationalert"
+    style="text-align: center; background-color: #666666; font-size:3vw; margin-right:10vw; margin-left:10vw; display: none;">
+    <span style="color: #ff6600;">
       <b><i>UH-OH!</i></b><br> We need access to your location to help you plan your trip!<br>Please
       Click the 'Allow Access' button in your browser.
-    </span></h1>
+    </span>
+  </h1>
 
-  <h2 style="text-align: center; font-size:2vw;"><span style="font-family: Broadway;">Just
+  {% if coordinate and temp and user_coordinate%}
+  <div style="text-align: center;"> <img src="http://openweathermap.org/img/wn/{{imageid}}@4x.png" alt=""
+      title="wpic" style="width: 10vw; height: 10vw;"></div>
+  <div id="responsebody"><span>On your {{adjective}}
+      trip to
+      {{location_title}}
+      it looks like you will be traveling
+      {{distance}} miles in {{temp}} weather. {{comment}}!</span>
+  </div>
+  <div style="text-align: center;padding: 14pt;""><br></div>
+  {% endif %}
+
+  {%if not temp%}
+  <h2 style=" text-align: center; font-size:2vw;"><span style="font-family: Broadway;">Just
       Type in where you want to go<br>And the time you want to get
       there,<br>Then press Lets Go!</span>
-  </h2>
+    </h2>
+    <div style="text-align: center;padding: 14pt;""><br></div>
+  {%endif%}
 
-  <div style="text-align: center; height: 42px;">
-    <div style="text-align: left;">
-      <div style="text-align: center;">
-        <form name="" action="" method="POST" autocomplete="on">
-          {%csrf_token%}
-          <input name="city" class="formbox" placeholder="Enter you destination" required="required"
-            style="color: darkblue; background-color: lightblue; font-family: Broadway;" type="text"><br>
-          <input name="time" class="formbox"
-            style="color: darkblue; background-color: lightblue; font-family: Broadway;" placeholder="Arrival Time"
-            type="time"><br>
-          <input name="submit" class="formbox" value="Lets Go!"
-            style="background-color: lightgreen; border-color: green; font-family: Broadway; color: #6600cc;"
-            type="submit"> <input id="clientlatitude" name="clientlatitude" value="NULL" type="hidden">
-          <br>
-          <input id="clientlongitude" name="clientlongitude" value="NULL" type="hidden">
-        </form>
-
-      </div>
-      {% if coordinate and temp and user_coordinate%}
-      <div> <br>
-        <div style="text-align: center;"> On your {{adjective}} trip to
-          {{location_title}}</div>
-        <div style="text-align: center;"> it looks like you will be traveling
-          {{distance}} miles in {{temp}} degree weather</div>
-        <div style="text-align: center;"> you might want to {{comment}}! <br>
-          {{time}}</div>
-      </div>
-      {% endif %}
-      <div>
-        <h3 id="info"></h3>
+  <div style=" text-align: center; height: 42px;">
+      <div style="text-align: left;">
+        <div style="text-align: center;">
+          <form name="" action="" method="POST" autocomplete="on">
+            {%csrf_token%}
+            <input name="city" class="formbox" placeholder="Enter you destination" required="required" type="text" style="border-top-left-radius: 100%; border-top-right-radius: 100%;"><br>
+            <input id="timeformbox" name="time" class="formbox" value="" type="time" required="required"><br>
+            <input id="submitbtn" name="submit" class="formbox" value="Lets Go!"
+              style="background-color: #426FA0; border-color: #25324E; font-family: Broadway; color: #D89B65;
+              border-bottom-left-radius: 100%; border-bottom-right-radius: 100%;"
+              type="submit">
+            <input id="clientlatitude" name="clientlatitude" value="NULL" type="hidden">
+            <input id="clientlongitude" name="clientlongitude" value="NULL" type="hidden">
+            <input id="clienttimeoffset" name="clienttimeoffset" value="NULL" type="hidden">
+          </form>
+        </div>
       </div>
     </div>
-  </div>
-  <div style="text-align: center;"></div>
+    <div style="text-align: center;padding: 25vh;""><br></div>
 
   <script>
     navigator.geolocation.getCurrentPosition(locationSuccess, locationFailure);
-    //document.body.style.background = 'lightgray';
+    const currentDate = new Date();
+    let h = addZero(currentDate.getHours());
+    let m = addZero(currentDate.getMinutes());
+    let time = h + ":" + m;
+    console.log(time); document.getElementById("timeformbox").value = "12:34:56";
+    document.getElementById("timeformbox").value = time;
+    document.getElementById("clienttimeoffset").value = currentDate.getTimezoneOffset();
+
+    function addZero(i) {
+      if (i < 10) {i = "0" + i}
+      return i;
+    }
 
     function locationSuccess(position) {
+      
       document.getElementById("locationalert").style.display = "none";
       document.getElementById("clientlatitude").value = position.coords.latitude;
-      document.getElementById("clientlongitude").value = position.coords.longitude;
-    }
+      document.getElementById("clientlongitude").value = position.coords.longitude; 
+      document.getElementById("submitbtn"); btn.removeAttribute('disabled')
+    } 
+
     function locationFailure(position) {
-      document.getElementById("locationalert").style.display = "block";
+      document.getElementById("locationalert").style.display = "block"; let btn = document.getElementById("submitbtn");
+      btn.setAttribute('disabled', 'disabled'); btn.style.background = "hsl(120, 25%, 90%)"; btn.style.color = "gray";
     }
+    
   </script>
 
-  <style>
-    .formbox {
-      width: 200px;
-      height: 30px;
-      border: 2px solid blue;
-      box-sizing: border-box;
-      text-align: center;
-    }
+      <style>
+        h1,
+        h3,
+        div,
+        span {
+          color: #25324E;
+        }
 
-    body {
-      background-image: url('media/slowprettyclouds.gif');
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      background-size: 100% 100%;
-    }
-  </style>
+        .formbox {
+          font-size: 2vw;
+          padding: 20px;
+          width: 35vw;
+          height: 10vh;
+          border: 2px solid #25324E;
+          color: #25324E;
+          background-color: #47A3A2;
+          box-sizing: border-box;
+          text-align: center;
+          font-family: Broadway;
+        }
+
+        #responsebody {
+          font-size: 4vw;
+          text-align: center;
+          box-sizing: border-box;
+          margin-left: 10vw;
+          width: 80vw;
+          color: #25324E;
+          font-family: Broadway;
+        }
+
+        body {
+          /* background-image: url('media/slowprettyclouds.gif'); */
+          background-color: #A47656;
+          background-repeat: no-repeat;
+          background-attachment: fixed;
+          background-size: 100% 100%;
+        }
+
+        #bg-right {
+          background-color: #D89B65;
+          position: fixed;
+          top: 0;
+          bottom: 0;
+          left: 90vw;
+          right: 0;
+          z-index: -1;
+        }
+
+        #bg-left {
+          background-color: #D89B65;
+          position: fixed;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 90vw;
+          z-index: -1;
+        }
+      </style>
 </body>
 
 </html>
